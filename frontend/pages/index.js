@@ -3,8 +3,8 @@ import React from 'react'
 
 function index() {
   return (
-    <div>
-      <Nav/>
+    <div className='w-screen h-screen bg-black p-2'>
+      
     </div>
   )
 }

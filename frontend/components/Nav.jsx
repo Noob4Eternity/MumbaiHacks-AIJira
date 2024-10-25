@@ -14,7 +14,7 @@ const Nav = () => {
 
     return (        
         <div className='py-2 px-3'>
-            <nav className="bg-white shadow-md rounded-2xl">
+            <nav className=" shadow-md rounded-2xl">
             <div className="container mx-auto flex justify-between items-center p-4">
                 <div className="flex items-center">
                     <a href="#" className="text-2xl font-bold text-blue-600">Brand</a>
