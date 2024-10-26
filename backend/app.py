@@ -1,7 +1,9 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS  # Import CORS
 from mumbaihacks.crew import TaskAutomationCrew
 
 app = Flask(__name__)
+CORS(app)  # Enable CORS for all routes
 
 @app.route('/client-requirements', methods=['POST'])
 def process_client_requirements():
