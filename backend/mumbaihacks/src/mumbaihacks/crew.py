@@ -4,7 +4,9 @@ from crewai.project import CrewBase, agent, crew, task
 from crewai import LLM
 import os
 import yaml
+import dotenv
 
+dotenv.load_dotenv()
 # Set up API key and model
 os.environ['GEMINI_API_KEY'] = os.getenv("GEMINI_API_KEY")
 model = LLM(
