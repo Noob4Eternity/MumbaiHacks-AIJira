@@ -11,44 +11,40 @@ const Kanban = () => {
   });
 
   useEffect(() => {
-    // Reference to the tasks and users nodes
     const tasksRef = ref(db, "tasks");
     const usersRef = ref(db, "users");
 
-    // Fetch and organize tasks
     const fetchTasks = () => {
       onValue(tasksRef, (snapshot) => {
         const tasksData = snapshot.val() || {};
         const unassignedTasks = [];
 
-        // Process unassigned tasks
-        Object.entries(tasksData).forEach(([taskId, taskName]) => {
+        Object.entries(tasksData).forEach(([taskId, taskInfo]) => {
           unassignedTasks.push({
             id: taskId,
-            title: taskName,
-            priority: "Medium", // You can modify this as needed
+            title: taskInfo.title || "Untitled Task",
+            priority: taskInfo.priority || "Medium",
           });
         });
 
-        // Fetch user tasks
         onValue(usersRef, (userSnapshot) => {
           const usersData = userSnapshot.val() || {};
           const inProgressTasks = [];
           const doneTasks = [];
 
-          // Process user tasks
           Object.entries(usersData).forEach(([userId, userTasks]) => {
-            Object.entries(userTasks).forEach(([taskId, status]) => {
+            Object.entries(userTasks).forEach(([taskId, taskInfo]) => {
               const task = {
                 id: taskId,
-                title: tasksData[taskId] || taskId,
-                priority: "Medium",
+                title: taskInfo.title || "Untitled Task",
+                priority: taskInfo.priority || "Medium",
                 assignedTo: userId,
+                status: taskInfo.status,
               };
 
-              if (status === "In Progress") {
+              if (taskInfo.status === "In Progress") {
                 inProgressTasks.push(task);
-              } else if (status === "Done") {
+              } else if (taskInfo.status === "Done") {
                 doneTasks.push(task);
               }
             });
@@ -69,55 +65,55 @@ const Kanban = () => {
   const handleDragStart = (e, taskId, sourceColumn) => {
     e.dataTransfer.setData("taskId", taskId);
     e.dataTransfer.setData("sourceColumn", sourceColumn);
-    e.dataTransfer.setData("taskTitle", tasks[sourceColumn].find((t) => t.id === taskId)?.title);
-  };
-
-  const handleDragOver = (e) => {
-    e.preventDefault();
   };
 
   const handleDrop = async (e, targetColumn) => {
     e.preventDefault();
     const taskId = e.dataTransfer.getData("taskId");
     const sourceColumn = e.dataTransfer.getData("sourceColumn");
-    const taskTitle = e.dataTransfer.getData("taskTitle");
 
     if (sourceColumn === targetColumn) return;
 
+    // Temporarily disable local state update to avoid duplication
+    const task = tasks[sourceColumn].find((t) => t.id === taskId);
+    if (!task) {
+      console.error("Task not found in the source column:", sourceColumn);
+      return;
+    }
+
     try {
+      // Perform the Firebase update but do not change local state directly
       if (sourceColumn === "todo") {
-        // When moving from todo to other columns:
-        // 1. Remove from tasks (unassigned tasks)
         await remove(ref(db, `tasks/${taskId}`));
-
-        // 2. Add to user assignments
         const status = targetColumn === "inProgress" ? "In Progress" : "Done";
-        await set(ref(db, `users/testUser/${taskId}`), status);
+        await set(ref(db, `users/testUser/${taskId}`), {
+          title: task.title,
+          priority: task.priority,
+          status: status,
+        });
       } else if (targetColumn === "todo") {
-        // When moving back to todo:
-        // 1. Remove from user assignments
         await remove(ref(db, `users/testUser/${taskId}`));
-
-        // 2. Add back to unassigned tasks
-        await set(ref(db, `tasks/${taskId}`), taskTitle);
+        await set(ref(db, `tasks/${taskId}`), {
+          title: task.title,
+          priority: task.priority,
+        });
       } else {
-        // Moving between inProgress and done:
         const status = targetColumn === "inProgress" ? "In Progress" : "Done";
-        await set(ref(db, `users/testUser/${taskId}`), status);
+        await set(ref(db, `users/testUser/${taskId}`), {
+          title: task.title,
+          priority: task.priority,
+          status: status,
+        });
       }
 
-      // Update local state
-      setTasks((prev) => {
-        const task = prev[sourceColumn].find((t) => t.id === taskId);
-        return {
-          ...prev,
-          [sourceColumn]: prev[sourceColumn].filter((t) => t.id !== taskId),
-          [targetColumn]: [...prev[targetColumn], task],
-        };
-      });
+      // Let Firebase `onValue` listener update the state after the drop.
     } catch (error) {
       console.error("Error updating task status:", error);
     }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
   };
 
   return (
