@@ -1,5 +1,5 @@
 gather_requirements_task:
-  description: "Collect all necessary requirements from the client: {initial_request}."
+  description: "Collect all necessary requirements from the client. Understand the requirements provided by the client thoroughly. do not add any additional features even if the requirements provided by the client seem too simple. We as a company will only provide what is required. Requirements: {initial_request}."
   expected_output: "Detailed description of client requirements."
   agent: requirement_collector
   inputs:
@@ -7,7 +7,7 @@ gather_requirements_task:
   dependencies: []
 
 identify_user_persona_task:
-  description: "Identify the primary user persona from requirements."
+  description: "Identify the user story for the primary from requirements generated."
   expected_output: "Persona details aligned with client requirements."
   dependencies: ["gather_requirements_task"]
 
@@ -37,11 +37,11 @@ breakdown_user_story_task:
   dependencies: ["validate_user_story_task"]
 
 estimate_effort_task:
-  description: "Estimate the effort for each task in the breakdown."
+  description: "Estimate the FPA i.e Function Point Analysis for each task in the breakdown. Assign a complexity level to each task on the scale of Low, Medium, High. Low being 3, Medium being 5 and High being 8."
   expected_output: "Effort estimations for each task."
   dependencies: ["breakdown_user_story_task"]
 
 assign_priority_task:
-  description: "Assign priority to tasks based on estimated effort."
+  description: "List all the generated tasks and assign a priority to each task with context to the importance of the task with the original goal."
   expected_output: "Priority levels assigned to each task."
   dependencies: ["estimate_effort_task"]

@@ -8,10 +8,6 @@ def run():
     Run the crew for Requirement to User Story process.
     """
     inputs = {
-        'initial_request': '''The client needs a mobile application that allows users to track their fitness activities. Key features include:User Profiles: Users can create and manage personal profiles.
-        Activity Tracking: Users should be able to log activities like running, cycling, and swimming.
-        Goal Setting: Users can set fitness goals (e.g., distance, time) and receive reminders.
-        Progress Reports: The app should generate weekly progress reports with visual charts.
-        Social Sharing: Users can share achievements on social media platforms.'''
+        'initial_request': '''Make me an online clothing Thrift Store, which is super personalized for Users. Give options to sort by gender, age and Trends. Include an option to shop by Generation (for e.g. the 1990s, 2000s etc). It should also have an AI Studio for People to design and view their outfits based on a user's existing wardrobe'''
     }
     TaskAutomationCrew().crew().kickoff(inputs=inputs)
