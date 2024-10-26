@@ -39,6 +39,9 @@ export const AuthContextProvider = ({ children }) => {
       console.log("User:", user);
       console.log("Access Token:", token);
 
+      localStorage.setItem("user", JSON.stringify(user));
+      localStorage.setItem("accessToken", token);
+
       return { user, token }; // You can return the user and token if needed
     } catch (error) {
       // Handle Errors here.
