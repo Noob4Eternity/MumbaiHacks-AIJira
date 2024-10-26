@@ -1,32 +1,32 @@
 import { useState, useEffect } from "react";
 import React from "react";
 import { ref, onValue, set, remove } from "firebase/database";
-import { db } from "@/config/firebase";
+import { db } from "../pages/firebase";
 
 const Kanban = () => {
   const [tasks, setTasks] = useState({
     todo: [],
     inProgress: [],
-    done: []
+    done: [],
   });
 
   useEffect(() => {
     // Reference to the tasks and users nodes
-    const tasksRef = ref(db, 'tasks');
-    const usersRef = ref(db, 'users');
+    const tasksRef = ref(db, "tasks");
+    const usersRef = ref(db, "users");
 
     // Fetch and organize tasks
     const fetchTasks = () => {
       onValue(tasksRef, (snapshot) => {
         const tasksData = snapshot.val() || {};
         const unassignedTasks = [];
-        
+
         // Process unassigned tasks
         Object.entries(tasksData).forEach(([taskId, taskName]) => {
           unassignedTasks.push({
             id: taskId,
             title: taskName,
-            priority: "Medium" // You can modify this as needed
+            priority: "Medium", // You can modify this as needed
           });
         });
 
@@ -43,7 +43,7 @@ const Kanban = () => {
                 id: taskId,
                 title: tasksData[taskId] || taskId,
                 priority: "Medium",
-                assignedTo: userId
+                assignedTo: userId,
               };
 
               if (status === "In Progress") {
@@ -57,7 +57,7 @@ const Kanban = () => {
           setTasks({
             todo: unassignedTasks,
             inProgress: inProgressTasks,
-            done: doneTasks
+            done: doneTasks,
           });
         });
       });
@@ -69,7 +69,7 @@ const Kanban = () => {
   const handleDragStart = (e, taskId, sourceColumn) => {
     e.dataTransfer.setData("taskId", taskId);
     e.dataTransfer.setData("sourceColumn", sourceColumn);
-    e.dataTransfer.setData("taskTitle", tasks[sourceColumn].find(t => t.id === taskId)?.title);
+    e.dataTransfer.setData("taskTitle", tasks[sourceColumn].find((t) => t.id === taskId)?.title);
   };
 
   const handleDragOver = (e) => {
@@ -89,20 +89,18 @@ const Kanban = () => {
         // When moving from todo to other columns:
         // 1. Remove from tasks (unassigned tasks)
         await remove(ref(db, `tasks/${taskId}`));
-        
+
         // 2. Add to user assignments
         const status = targetColumn === "inProgress" ? "In Progress" : "Done";
         await set(ref(db, `users/testUser/${taskId}`), status);
-      } 
-      else if (targetColumn === "todo") {
+      } else if (targetColumn === "todo") {
         // When moving back to todo:
         // 1. Remove from user assignments
         await remove(ref(db, `users/testUser/${taskId}`));
-        
+
         // 2. Add back to unassigned tasks
         await set(ref(db, `tasks/${taskId}`), taskTitle);
-      }
-      else {
+      } else {
         // Moving between inProgress and done:
         const status = targetColumn === "inProgress" ? "In Progress" : "Done";
         await set(ref(db, `users/testUser/${taskId}`), status);
@@ -132,11 +130,7 @@ const Kanban = () => {
           onDrop={(e) => handleDrop(e, column)}
         >
           <h3 className="font-semibold mb-3 text-gray-600">
-            {column === "todo"
-              ? "To Do"
-              : column === "inProgress"
-              ? "In Progress"
-              : "Done"}
+            {column === "todo" ? "To Do" : column === "inProgress" ? "In Progress" : "Done"}
           </h3>
           {tasks[column].map((task) => (
             <div
@@ -158,9 +152,7 @@ const Kanban = () => {
                 {task.priority}
               </span>
               {task.assignedTo && (
-                <div className="text-xs text-gray-400 mt-1">
-                  Assigned to: {task.assignedTo}
-                </div>
+                <div className="text-xs text-gray-400 mt-1">Assigned to: {task.assignedTo}</div>
               )}
             </div>
           ))}
