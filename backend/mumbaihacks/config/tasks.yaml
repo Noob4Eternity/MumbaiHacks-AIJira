@@ -1,5 +1,5 @@
 gather_requirements_task:
-  description: "Collect all necessary requirements from the client: {initial_request}."
+  description: "Collect all necessary requirements from the client. Understand the requirements provided by the client thoroughly. do not add any additional features even if the requirements provided by the client seem too simple. We as a company will only provide what is required. Requirements: {initial_request}."
   expected_output: "Detailed description of client requirements."
   agent: requirement_collector
   inputs:
@@ -7,17 +7,17 @@ gather_requirements_task:
   dependencies: []
 
 identify_user_persona_task:
-  description: "Identify the primary user persona from requirements."
+  description: "Identify the user persona for the primary user from requirements generated."
   expected_output: "Persona details aligned with client requirements."
   dependencies: ["gather_requirements_task"]
 
 define_user_goal_task:
-  description: "Define the user's main goals for the project."
+  description: "Define the user's main goals for the project. These goals should be in line with the user persona identified."
   expected_output: "A list of goals relevant to the user story."
   dependencies: ["identify_user_persona_task"]
 
 outline_user_benefit_task:
-  description: "Outline the benefits the user gains from this project."
+  description: "Outline the benefits the user gains from this project. Ensure these benefits align with the defined user goals."
   expected_output: "Benefit statements that align with user goals."
   dependencies: ["define_user_goal_task"]
 
@@ -27,21 +27,21 @@ create_user_story_task:
   dependencies: ["outline_user_benefit_task"]
 
 validate_user_story_task:
-  description: "Validate the user story for accuracy and completeness."
+  description: "Validate the user story for accuracy and completeness. Also see how much it is in line with the original requirements submitted by the client."
   expected_output: "Validated user story, meeting all client requirements."
   dependencies: ["create_user_story_task"]
 
 breakdown_user_story_task:
-  description: "Break down the user story into actionable tasks."
+  description: "Break down the user story into actionable tasks. The tasks can be development related, design related, or any other task that needs to be done to complete the user story."
   expected_output: "A list of tasks derived from the user story."
   dependencies: ["validate_user_story_task"]
 
 estimate_effort_task:
-  description: "Estimate the effort for each task in the breakdown."
+  description: "Estimate the FPA i.e Function Point Analysis for each task in the breakdown. Assign a complexity level to each task on the scale of Low, Medium, High. Low being 3, Medium being 5 and High being 8."
   expected_output: "Effort estimations for each task."
   dependencies: ["breakdown_user_story_task"]
 
 assign_priority_task:
-  description: "Assign priority to tasks based on estimated effort."
+  description: "List all the generated tasks and assign a priority to each task with context to the importance of the task with the original goal."
   expected_output: "Priority levels assigned to each task."
   dependencies: ["estimate_effort_task"]
