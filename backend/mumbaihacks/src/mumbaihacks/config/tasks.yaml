@@ -1,0 +1,47 @@
+gather_requirements_task:
+  description: "Collect all necessary requirements from the client: {initial_request}."
+  expected_output: "Detailed description of client requirements."
+  agent: requirement_collector
+  inputs:
+    initial_request: "Detailed requirements for user story creation."
+  dependencies: []
+
+identify_user_persona_task:
+  description: "Identify the primary user persona from requirements."
+  expected_output: "Persona details aligned with client requirements."
+  dependencies: ["gather_requirements_task"]
+
+define_user_goal_task:
+  description: "Define the user's main goals for the project."
+  expected_output: "A list of goals relevant to the user story."
+  dependencies: ["identify_user_persona_task"]
+
+outline_user_benefit_task:
+  description: "Outline the benefits the user gains from this project."
+  expected_output: "Benefit statements that align with user goals."
+  dependencies: ["define_user_goal_task"]
+
+create_user_story_task:
+  description: "Create a user story based on the defined goals and benefits."
+  expected_output: "A complete user story encapsulating client requirements."
+  dependencies: ["outline_user_benefit_task"]
+
+validate_user_story_task:
+  description: "Validate the user story for accuracy and completeness."
+  expected_output: "Validated user story, meeting all client requirements."
+  dependencies: ["create_user_story_task"]
+
+breakdown_user_story_task:
+  description: "Break down the user story into actionable tasks."
+  expected_output: "A list of tasks derived from the user story."
+  dependencies: ["validate_user_story_task"]
+
+estimate_effort_task:
+  description: "Estimate the effort for each task in the breakdown."
+  expected_output: "Effort estimations for each task."
+  dependencies: ["breakdown_user_story_task"]
+
+assign_priority_task:
+  description: "Assign priority to tasks based on estimated effort."
+  expected_output: "Priority levels assigned to each task."
+  dependencies: ["estimate_effort_task"]
